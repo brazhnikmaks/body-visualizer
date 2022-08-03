@@ -1,0 +1,14 @@
+node_modules
+.vscode
+.idea
+build
+www
+src/style/partials/font-icons.scss
+src/style/libs/sprite.sass
+src/fonts/icons
+package-lock.json
+src/img/svg/symbols.svg
+src/preview/symbols.html
+bower_components
+sitespeed-result
+backstop_data/bitmaps_test/
