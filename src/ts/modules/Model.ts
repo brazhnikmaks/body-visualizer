@@ -142,7 +142,8 @@ export default class Model implements IModel {
 			};
 
 		this.attach = (gl: WebGLRenderingContext): uniformLocationsType => {
-			if (attachedGL) throw new Error("Already attached to a gl context");
+			if (attachedGL?.canvas === gl.canvas)
+				throw new Error("Already attached to a gl context");
 			attachedGL = gl;
 			uniformLocations = {} as uniformLocationsType;
 			attributeLocations = {} as {

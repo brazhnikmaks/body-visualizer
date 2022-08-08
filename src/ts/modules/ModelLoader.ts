@@ -1,5 +1,4 @@
 import FileLoader from "./FileLoader";
-import PrioritizedFileLoader from "./PrioritizedFileLoader";
 import Mesh from "./Mesh";
 import Model from "./Model";
 
@@ -7,22 +6,15 @@ export default class ModelLoader implements IModelLoader {
 	canvas: HTMLCanvasElement;
 	shape_info_url: string;
 	shape_data_directory: string;
-	file_loader: IFileLoader;
 	startModelViewerFunction: (canvas: HTMLCanvasElement, model: IModel) => void;
-	mesh_loader!: IPrioritizedFileLoader;
 	meshes: {
 		[key: string]: IMesh;
 	};
-	filenames: string[];
 	means: number[];
 	covariance: number[][];
+	offset_meshes_names: string[];
 	template_url: string;
 	offset_urls: string[];
-	order_offset_names: {
-		[key: string]: number;
-	};
-	offset_names: string[];
-	offset_filenames: string[];
 	offset_meshes: IMesh[];
 	template_mesh: IMesh;
 	current_model: IModel;
@@ -31,10 +23,6 @@ export default class ModelLoader implements IModelLoader {
 		canvas: HTMLCanvasElement,
 		shape_info_url: string,
 		shape_data_directory: string,
-		order_offset_names: {
-			[key: string]: number;
-		},
-		offset_names: string[],
 		startModelViewerFunction: (
 			canvas: HTMLCanvasElement,
 			model: IModel,
@@ -44,40 +32,40 @@ export default class ModelLoader implements IModelLoader {
 		this.startModelViewerFunction = startModelViewerFunction;
 		this.shape_data_directory = shape_data_directory;
 		this.meshes = {};
-		this.filenames = [];
+		this.offset_meshes_names = [];
 		this.means = [];
 		this.covariance = [];
-		this.order_offset_names = order_offset_names;
-		this.offset_names = offset_names;
-		this.offset_filenames = [];
-		this.file_loader = new FileLoader(
+
+		new FileLoader(
 			[shape_info_url],
 			[
-				(
-					(model_loader) => () =>
-						model_loader.create_models()
-				)(this),
+				((model_loader) => (response) => {
+					const { offset_meshes_names, means, covariance } = response.data;
+					model_loader.finish_loading_shape_info(
+						offset_meshes_names,
+						means,
+						covariance,
+					);
+					return model_loader.load_meshes();
+				})(this),
 			],
 		);
 	}
 
 	private finish_loading_shape_info(
-		filenames: string[],
+		offset_meshes_names: string[],
 		means: number[],
 		covariance: number[][],
 	) {
-		this.filenames = filenames;
-		this.means = means;
-		this.covariance = covariance;
-		this.template_url = this.shape_data_directory + "mean" + ".js";
-		this.offset_filenames = Array(filenames.length);
 		this.offset_urls = [];
 		this.meshes = {};
-		for (let i = 0; i < filenames.length; i++) {
-			this.offset_filenames[i] =
-				filenames[this.order_offset_names[this.offset_names[i].toLowerCase()]];
+		this.offset_meshes_names = offset_meshes_names;
+		this.means = means;
+		this.covariance = covariance;
+		this.template_url = this.shape_data_directory + "mean" + ".json";
+		for (let i = 0; i < offset_meshes_names.length; i++) {
 			this.offset_urls.push(
-				this.shape_data_directory + this.offset_filenames[i] + ".js",
+				this.shape_data_directory + this.offset_meshes_names[i] + ".json",
 			);
 		}
 	}
@@ -91,34 +79,37 @@ export default class ModelLoader implements IModelLoader {
 		this.meshes[name].faces = faces;
 	}
 
-	private template_loaded() {
-		this.template_mesh = this.meshes["mean"];
+	private template_loaded(name: string) {
+		this.template_mesh = this.meshes[name];
 		this.offset_meshes = [];
-		this.current_model = new Model(this.template_mesh, this.offset_meshes);
+
+		const offsets_callback = ((model_loader) => (response) => {
+			const { name, vertices, faces } = response.data;
+			model_loader.create_mesh(name, vertices, faces);
+			this.offset_meshes.push(this.meshes[name]);
+			if (this.offset_meshes.length === this.offset_urls.length) {
+				return model_loader.create_model();
+			}
+		})(this);
+
+		new FileLoader(
+			this.offset_urls,
+			new Array(this.offset_urls.length).fill(offsets_callback),
+		);
 	}
 
-	private offsets_loaded() {
-		this.offset_meshes = [];
-		for (var i = 0; i < this.filenames.length; i++) {
-			this.offset_meshes[i] = this.meshes[this.offset_filenames[i]];
-		}
+	private create_model() {
 		this.current_model = new Model(this.template_mesh, this.offset_meshes);
 		this.startModelViewerFunction(this.canvas, this.current_model);
 	}
 
-	private create_models() {
-		const template_callback = (
-			(model_loader) => () =>
-				model_loader.template_loaded()
-		)(this);
-		const offsets_callback = (
-			(model_loader) => () =>
-				model_loader.offsets_loaded()
-		)(this);
+	private load_meshes() {
+		const template_callback = ((model_loader) => (response) => {
+			const { name, vertices, faces } = response.data;
+			model_loader.create_mesh(name, vertices, faces);
+			return model_loader.template_loaded(name);
+		})(this);
 
-		this.mesh_loader = new PrioritizedFileLoader(
-			[[this.template_url], this.offset_urls],
-			[template_callback, offsets_callback],
-		);
+		new FileLoader([this.template_url], [template_callback]);
 	}
 }

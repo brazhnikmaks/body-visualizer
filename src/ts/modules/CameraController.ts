@@ -7,21 +7,18 @@ export default class CameraController implements ICameraController {
 	curX: number;
 	curY: number;
 	axis: cameraAxisType;
-	element: HTMLElement;
-	destroy: () => void;
+	element!: HTMLElement;
+	private destroy: () => void;
 
-	constructor(element: HTMLElement, axis: cameraAxisType) {
+	constructor(axis: cameraAxisType) {
 		this.xRot = 0;
 		this.yRot = 0;
 		this.scaleFactor = 3.0;
 		this.dragging = false;
 		this.curX = 0;
 		this.curY = 0;
-		this.element = element;
 		this.axis = axis || "both";
 		this.onchange_functions = [];
-
-		this.destroy = this.setEvents();
 	}
 
 	private start(e: MouseEvent | TouchEvent) {
@@ -103,13 +100,16 @@ export default class CameraController implements ICameraController {
 		};
 	}
 
-	public add_viewer(callback: () => void) {
+	public add_viewer(element: HTMLElement, callback: () => void) {
+		this.element = element;
 		this.onchange_functions.push(callback);
+		this.destroy = this.setEvents();
 	}
 
 	public remove_viewer(callback: () => void) {
 		this.onchange_functions = this.onchange_functions.filter(
 			(onchange_function) => onchange_function !== callback,
 		);
+		this.destroy && this.destroy();
 	}
 }

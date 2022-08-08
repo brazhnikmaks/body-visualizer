@@ -34,7 +34,7 @@ export default class ModelViewer implements IModelViewer {
 		this.repaint = () => {
 			const gl = this.gl;
 			GLUTIL.checkGLError(gl);
-			this.draw(gl, null, {
+			this.draw(gl, {
 				xRot: this.controller.xRot,
 				yRot: this.controller.yRot,
 				width: this.canvas.width,
@@ -50,10 +50,23 @@ export default class ModelViewer implements IModelViewer {
 		this.attach = (controller: ICameraController) => {
 			if (this.controller) this.disconnect();
 			this.controller = controller;
-			this.controller.add_viewer(_self.repaint);
+			this.controller.add_viewer(this.canvas, _self.repaint);
 		};
 
 		this.attach(controller);
+		this.repaint();
+	}
+
+	public setGl(canvas: HTMLCanvasElement) {
+		this.canvas = canvas;
+		this.gl = GLUTIL.getContext(canvas);
+		GLUTIL.checkGLError(this.gl);
+
+		this.disconnect();
+
+		this.models.forEach((model) => model.attach(this.gl));
+		this.init();
+		this.attach(this.controller);
 		this.repaint();
 	}
 
@@ -71,11 +84,7 @@ export default class ModelViewer implements IModelViewer {
 		GLUTIL.checkGLError(gl);
 	}
 
-	public draw(
-		gl: WebGLRenderingContext,
-		locations: any,
-		options: IModelViewerOptions,
-	) {
+	public draw(gl: WebGLRenderingContext, options: IModelViewerOptions) {
 		GLUTIL.checkGLError(gl);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		gl.viewport(0, 0, options.width, options.height);

@@ -10,8 +10,7 @@ interface ICameraController {
 	curY: number;
 	axis?: cameraAxisType;
 	element: HTMLElement;
-	destroy: () => void;
-	add_viewer: (callback: () => void) => void;
+	add_viewer: (element: HTMLElement, callback: () => void) => void;
 	remove_viewer: (callback: () => void) => void;
 }
 
@@ -89,6 +88,7 @@ interface IModelViewer {
 	repaint: () => void;
 	disconnect: () => void;
 	attach: (controller: ICameraController) => void;
+	setGl: (canvas: HTMLCanvasElement) => void;
 }
 
 interface IModelViewerOptions {
@@ -118,25 +118,18 @@ interface IPrioritizedFileLoader {
 }
 
 interface IModelLoader {
-	canvas: HTMLCanvasElement | null;
+	canvas: HTMLCanvasElement;
 	shape_info_url: string;
 	shape_data_directory: string;
-	file_loader: IFileLoader;
 	startModelViewerFunction: (canvas: HTMLCanvasElement, model: IModel) => void;
-	mesh_loader: IPrioritizedFileLoader;
 	meshes: {
 		[key: string]: IMesh;
 	};
-	filenames: string[];
 	means: number[];
 	covariance: number[][];
+	offset_meshes_names: string[];
 	template_url: string;
 	offset_urls: string[];
-	order_offset_names: {
-		[key: string]: number;
-	};
-	offset_names: string[];
-	offset_filenames: string[];
 	offset_meshes: IMesh[];
 	template_mesh: IMesh;
 	current_model: IModel;

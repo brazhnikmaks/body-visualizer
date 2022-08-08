@@ -48,7 +48,7 @@ export default class FileLoader implements IFileLoader {
 		axios({
 			method: "GET",
 			url,
-			responseType: "text",
+			responseType: "json",
 		})
 			.then(create_success_callback(this, url, url_index))
 			.catch(create_error_callback(this, url, url_index));
@@ -60,37 +60,7 @@ export default class FileLoader implements IFileLoader {
 		url_index: number,
 		load_succeeded: boolean,
 	) {
-		let name,
-			ordering,
-			filenames,
-			means,
-			mean_vertices,
-			mean_faces,
-			mean_mesh,
-			covariance,
-			stature_plus_5mm_vertices,
-			stature_plus_5mm_faces,
-			weight_cube_root_plus_5kg_vertices,
-			weight_cube_root_plus_5kg_faces,
-			chest_circumference_plus_5mm_vertices,
-			chest_circumference_plus_5mm_faces,
-			waist_circumference_pref_plus_5mm_vertices,
-			waist_circumference_pref_plus_5mm_faces,
-			hip_circumference_maximum_plus_5mm_vertices,
-			hip_circumference_maximum_plus_5mm_faces,
-			inseam_right_plus_5mm_vertices,
-			inseam_right_plus_5mm_faces,
-			fitness_plus_5hours_vertices,
-			fitness_plus_5hours_faces,
-			inseam_right_plus_5mm_mesh,
-			chest_circumference_plus_5mm_mesh,
-			stature_plus_5mm_mesh,
-			weight_cube_root_plus_5kg_mesh,
-			waist_circumference_pref_plus_5mm_mesh,
-			hip_circumference_maximum_plus_5mm_mesh,
-			fitness_plus_5hours_mesh;
 		if (this.callback_functions[url_index]) {
-			eval(response.data);
 			this.callback_functions[url_index](response, url, load_succeeded);
 		}
 	}
