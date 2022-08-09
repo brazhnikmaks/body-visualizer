@@ -1090,6 +1090,11 @@
   resolved "https://registry.yarnpkg.com/@types/sizzle/-/sizzle-2.3.3.tgz#ff5e2f1902969d305225a047c8a0fd5c915cebef"
   integrity sha512-JYM8x9EGF163bEyhdJBpR2QX1R5naCJHC8ucJylJ3w9/CVBaskdQ8WqBf8MmQrd1kRvp/a4TS8HJ+bxzR7ZJYQ==
 
+"@types/sylvester@^0.1.8":
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/@types/sylvester/-/sylvester-0.1.8.tgz#c174065d52ef538a0a4c70cdf4ca36cbb563a450"
+  integrity sha512-x1bzR4PCxvv1/9iPrbdQ15gWgP8Tp8EPjO4VLjhMijepB44BzJ/XvJavoPViSiHxlBX6NgzRgO0H+qa68lJFGA==
+
 "@webassemblyjs/ast@1.9.0":
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.9.0.tgz#bd850604b4042459a5a41cd7d338cbed695ed964"

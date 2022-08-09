@@ -100,7 +100,7 @@ export default class Model implements IModel {
 
 		options.scaleFactors = Array(this.number_of_offset_meshes);
 		for (let i = 0; i < this.number_of_offset_meshes; i++) {
-			options.scaleFactors[i] = 0.0;
+			options.scaleFactors[i] = 0;
 		}
 
 		this.setColor = (color: Float32List) => {

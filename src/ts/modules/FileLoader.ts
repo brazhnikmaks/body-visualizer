@@ -49,9 +49,8 @@ export default class FileLoader implements IFileLoader {
 			method: "GET",
 			url,
 			responseType: "json",
-		})
-			.then(create_success_callback(this, url, url_index))
-			.catch(create_error_callback(this, url, url_index));
+		}).then(create_success_callback(this, url, url_index));
+		// .catch(create_error_callback(this, url, url_index));
 	}
 
 	private finish_loading_url(

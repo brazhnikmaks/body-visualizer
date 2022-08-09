@@ -88,7 +88,7 @@ interface IModelViewer {
 	repaint: () => void;
 	disconnect: () => void;
 	attach: (controller: ICameraController) => void;
-	setGl: (canvas: HTMLCanvasElement) => void;
+	setCanvas: (canvas: HTMLCanvasElement) => void;
 }
 
 interface IModelViewerOptions {
@@ -117,20 +117,39 @@ interface IPrioritizedFileLoader {
 	load_counts: number[];
 }
 
+type meshNameType =
+	| "mean"
+	| "stature"
+	| "weight"
+	| "chest"
+	| "waist"
+	| "hips"
+	| "inseam"
+	| "age";
+
 interface IModelLoader {
 	canvas: HTMLCanvasElement;
 	shape_info_url: string;
 	shape_data_directory: string;
 	startModelViewerFunction: (canvas: HTMLCanvasElement, model: IModel) => void;
 	meshes: {
-		[key: string]: IMesh;
+		[key in meshNameType]?: IMesh;
 	};
 	means: number[];
 	covariance: number[][];
-	offset_meshes_names: string[];
+	offset_meshes_names: meshNameType[];
 	template_url: string;
 	offset_urls: string[];
 	offset_meshes: IMesh[];
 	template_mesh: IMesh;
 	current_model: IModel;
+}
+
+interface IBodyVisualizer {
+	canvas: HTMLCanvasElement;
+	modelViewer: IModelViewer;
+	modelLoader: IModelLoader;
+	model_color: number[];
+	refreshModel: () => void;
+	updateContainer: (canvas: HTMLCanvasElement) => void;
 }

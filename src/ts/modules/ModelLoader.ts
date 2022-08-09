@@ -8,11 +8,11 @@ export default class ModelLoader implements IModelLoader {
 	shape_data_directory: string;
 	startModelViewerFunction: (canvas: HTMLCanvasElement, model: IModel) => void;
 	meshes: {
-		[key: string]: IMesh;
+		[key in meshNameType]: IMesh;
 	};
 	means: number[];
 	covariance: number[][];
-	offset_meshes_names: string[];
+	offset_meshes_names: meshNameType[];
 	template_url: string;
 	offset_urls: string[];
 	offset_meshes: IMesh[];
@@ -31,7 +31,9 @@ export default class ModelLoader implements IModelLoader {
 		this.canvas = canvas;
 		this.startModelViewerFunction = startModelViewerFunction;
 		this.shape_data_directory = shape_data_directory;
-		this.meshes = {};
+		this.meshes = {} as {
+			[key in meshNameType]: IMesh;
+		};
 		this.offset_meshes_names = [];
 		this.means = [];
 		this.covariance = [];
@@ -53,12 +55,14 @@ export default class ModelLoader implements IModelLoader {
 	}
 
 	private finish_loading_shape_info(
-		offset_meshes_names: string[],
+		offset_meshes_names: meshNameType[],
 		means: number[],
 		covariance: number[][],
 	) {
 		this.offset_urls = [];
-		this.meshes = {};
+		this.meshes = {} as {
+			[key in meshNameType]: IMesh;
+		};
 		this.offset_meshes_names = offset_meshes_names;
 		this.means = means;
 		this.covariance = covariance;

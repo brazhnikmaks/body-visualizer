@@ -57,7 +57,7 @@ export default class ModelViewer implements IModelViewer {
 		this.repaint();
 	}
 
-	public setGl(canvas: HTMLCanvasElement) {
+	public setCanvas(canvas: HTMLCanvasElement) {
 		this.canvas = canvas;
 		this.gl = GLUTIL.getContext(canvas);
 		GLUTIL.checkGLError(this.gl);
