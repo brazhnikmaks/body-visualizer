@@ -23,11 +23,17 @@ class BodyVisualizer implements IBodyVisualizer {
 	order_by_measurement!: {
 		[key in meshNameType]?: number;
 	};
+	onLoad?: () => void;
 
-	constructor(canvas: HTMLCanvasElement, gender: "male" | "female") {
+	constructor(
+		canvas: HTMLCanvasElement,
+		gender: "male" | "female",
+		onLoad?: () => void,
+	) {
 		this.modelLoader;
 		this.canvas = canvas;
 		this.gender = gender;
+		this.onLoad = onLoad;
 		this.measurement_names = [
 			"height",
 			"weight",
@@ -72,6 +78,7 @@ class BodyVisualizer implements IBodyVisualizer {
 		this.modelViewer = new ModelViewer([model], canvas, controller);
 
 		this.setupValues();
+		this.onLoad && this.onLoad();
 	}
 
 	public refreshModel() {
@@ -79,10 +86,10 @@ class BodyVisualizer implements IBodyVisualizer {
 	}
 
 	private loadMesh = () => {
-		const shape_info_url = `/models/${this.gender}/shapeinfo.json`;
-		const shape_data_directory = `/models/${this.gender}/`;
-		// const shape_info_url = `body-visualizer/models/${this.gender}/shapeinfo.json`;
-		// const shape_data_directory = `body-visualizer/models/${this.gender}/`;
+		// const shape_info_url = `/models/${this.gender}/shapeinfo.json`;
+		// const shape_data_directory = `/models/${this.gender}/`;
+		const shape_info_url = `http://localhost:5000/body-visualizer/models/${this.gender}/shapeinfo.json`;
+		const shape_data_directory = `http://localhost:5000/body-visualizer/models/${this.gender}/`;
 		this.modelLoader = new ModelLoader(
 			this.canvas,
 			shape_info_url,
@@ -281,5 +288,5 @@ class BodyVisualizer implements IBodyVisualizer {
 
 (window as any).BodyVisualizer = BodyVisualizer;
 
-const canvas = document.getElementById("body-viewer");
-window.bodyVisualiser = new BodyVisualizer(canvas, "male");
+// const canvas = document.getElementById("body-viewer");
+// window.bodyVisualiser = new BodyVisualizer(canvas, "male");

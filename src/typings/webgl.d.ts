@@ -166,4 +166,5 @@ interface IBodyVisualizer {
 		},
 		animate: boolean = false,
 	) => void;
+	onLoad?: () => void;
 }
