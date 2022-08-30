@@ -1,10 +1,10 @@
 {
 	"offset_meshes_names": [
-		"stature",
-		"weight",
-		"chest",
 		"waist",
+		"chest",
 		"hips",
+		"height",
+		"weight",
 		"inseam",
 		"age"
 	],

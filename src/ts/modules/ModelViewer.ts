@@ -9,6 +9,7 @@ export default class ModelViewer implements IModelViewer {
 	repaint: () => void;
 	disconnect: () => void;
 	attach: (controller: ICameraController) => void;
+	position: IPosition;
 
 	constructor(
 		in_models: IModel[],
@@ -26,6 +27,12 @@ export default class ModelViewer implements IModelViewer {
 			this.models.push(model);
 			model.attach(this.gl);
 		}
+
+		this.position = {
+			x: 0,
+			y: -0.81,
+			z: -2.2,
+		};
 
 		const _self = this;
 
@@ -70,9 +77,13 @@ export default class ModelViewer implements IModelViewer {
 		this.repaint();
 	}
 
+	public setPosition(x: number, y: number, z: number) {
+		this.position = { x, y, z };
+	}
+
 	public init() {
 		const gl = this.gl;
-		gl.clearColor(0.1, 0.1, 0.1, 1.0);
+		gl.clearColor(0, 0, 0, 0);
 		gl.clearDepth(1.0);
 		GLUTIL.checkGLError(gl);
 		gl.enable(gl.DEPTH_TEST);
@@ -97,7 +108,7 @@ export default class ModelViewer implements IModelViewer {
 		projection.perspective(45, options.width / options.height, 0.1, 100);
 		GLUTIL.checkGLError(gl);
 		model.loadIdentity();
-		model.translate(0.0, -1.0, -3.0);
+		model.translate(this.position.x, this.position.y, this.position.z);
 		model.rotate(options.xRot, 1, 0, 0);
 		model.rotate(options.yRot, 0, 1, 0);
 		GLUTIL.checkGLError(gl);

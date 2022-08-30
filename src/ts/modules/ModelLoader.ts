@@ -18,11 +18,13 @@ export default class ModelLoader implements IModelLoader {
 	offset_meshes: IMesh[];
 	template_mesh: IMesh;
 	current_model: IModel;
+	measurement_names: meshNameType[];
 
 	constructor(
 		canvas: HTMLCanvasElement,
 		shape_info_url: string,
 		shape_data_directory: string,
+		measurement_names: meshNameType[],
 		startModelViewerFunction: (
 			canvas: HTMLCanvasElement,
 			model: IModel,
@@ -30,6 +32,7 @@ export default class ModelLoader implements IModelLoader {
 	) {
 		this.canvas = canvas;
 		this.startModelViewerFunction = startModelViewerFunction;
+		this.measurement_names = measurement_names;
 		this.shape_data_directory = shape_data_directory;
 		this.meshes = {} as {
 			[key in meshNameType]: IMesh;
@@ -68,8 +71,9 @@ export default class ModelLoader implements IModelLoader {
 		this.covariance = covariance;
 		this.template_url = this.shape_data_directory + "mean" + ".json";
 		for (let i = 0; i < offset_meshes_names.length; i++) {
+			const nameIndex = offset_meshes_names.indexOf(this.measurement_names[i]);
 			this.offset_urls.push(
-				this.shape_data_directory + this.offset_meshes_names[i] + ".json",
+				this.shape_data_directory + offset_meshes_names[nameIndex] + ".json",
 			);
 		}
 	}
@@ -85,13 +89,16 @@ export default class ModelLoader implements IModelLoader {
 
 	private template_loaded(name: string) {
 		this.template_mesh = this.meshes[name];
-		this.offset_meshes = [];
+		this.offset_meshes = new Array(this.offset_meshes_names.length);
 
+		let loadedCount = 0;
 		const offsets_callback = ((model_loader) => (response) => {
 			const { name, vertices, faces } = response.data;
+			const dataIndex = this.measurement_names.indexOf(name);
 			model_loader.create_mesh(name, vertices, faces);
-			this.offset_meshes.push(this.meshes[name]);
-			if (this.offset_meshes.length === this.offset_urls.length) {
+			this.offset_meshes[dataIndex] = this.meshes[name];
+			loadedCount++;
+			if (loadedCount === this.offset_urls.length) {
 				return model_loader.create_model();
 			}
 		})(this);

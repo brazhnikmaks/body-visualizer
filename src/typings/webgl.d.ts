@@ -80,6 +80,12 @@ interface IModel {
 	draw: (uniforms: uniformsType) => void;
 }
 
+interface IPosition {
+	x: number;
+	y: number;
+	z: number;
+}
+
 interface IModelViewer {
 	canvas: HTMLCanvasElement;
 	gl: WebGLRenderingContext;
@@ -89,6 +95,7 @@ interface IModelViewer {
 	disconnect: () => void;
 	attach: (controller: ICameraController) => void;
 	setCanvas: (canvas: HTMLCanvasElement) => void;
+	setPosition: (x: number, y: number, z: number) => void;
 }
 
 interface IModelViewerOptions {
@@ -119,7 +126,7 @@ interface IPrioritizedFileLoader {
 
 type meshNameType =
 	| "mean"
-	| "stature"
+	| "height"
 	| "weight"
 	| "chest"
 	| "waist"
@@ -147,9 +154,16 @@ interface IModelLoader {
 
 interface IBodyVisualizer {
 	canvas: HTMLCanvasElement;
+	gender: "male" | "female";
 	modelViewer: IModelViewer;
 	modelLoader: IModelLoader;
 	model_color: number[];
 	refreshModel: () => void;
 	updateContainer: (canvas: HTMLCanvasElement) => void;
+	updateModel: (
+		values: {
+			[key in meshNameType]: number;
+		},
+		animate: boolean = false,
+	) => void;
 }
