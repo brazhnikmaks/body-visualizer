@@ -289,5 +289,9 @@ class BodyVisualizer implements IBodyVisualizer {
 
 (window as any).BodyVisualizer = BodyVisualizer;
 
-// const canvas = document.getElementById("body-viewer");
-// window.bodyVisualiser = new BodyVisualizer(canvas, "male", "http://localhost:5000");
+const canvas = document.getElementById("body-viewer");
+window.bodyVisualiser = new BodyVisualizer(
+	canvas,
+	"female",
+	"http://localhost:9000",
+);
