@@ -6,6 +6,7 @@ import ConditionalMultivariateGaussian from "./modules/ConditionalMultivariateGa
 class BodyVisualizer implements IBodyVisualizer {
 	canvas: HTMLCanvasElement;
 	gender: "male" | "female";
+	serverUrl: string;
 	modelViewer: IModelViewer;
 	modelLoader: IModelLoader;
 	model_color: number[];
@@ -28,11 +29,13 @@ class BodyVisualizer implements IBodyVisualizer {
 	constructor(
 		canvas: HTMLCanvasElement,
 		gender: "male" | "female",
+		serverUrl: string,
 		onLoad?: () => void,
 	) {
 		this.modelLoader;
 		this.canvas = canvas;
 		this.gender = gender;
+		this.serverUrl = serverUrl;
 		this.onLoad = onLoad;
 		this.measurement_names = [
 			"height",
@@ -86,10 +89,8 @@ class BodyVisualizer implements IBodyVisualizer {
 	}
 
 	private loadMesh = () => {
-		// const shape_info_url = `/models/${this.gender}/shapeinfo.json`;
-		// const shape_data_directory = `/models/${this.gender}/`;
-		const shape_info_url = `http://localhost:5000/body-visualizer/models/${this.gender}/shapeinfo.json`;
-		const shape_data_directory = `http://localhost:5000/body-visualizer/models/${this.gender}/`;
+		const shape_info_url = `${this.serverUrl}/body-visualizer/models/${this.gender}/shapeinfo.json`;
+		const shape_data_directory = `${this.serverUrl}/body-visualizer/models/${this.gender}/`;
 		this.modelLoader = new ModelLoader(
 			this.canvas,
 			shape_info_url,
@@ -289,4 +290,4 @@ class BodyVisualizer implements IBodyVisualizer {
 (window as any).BodyVisualizer = BodyVisualizer;
 
 // const canvas = document.getElementById("body-viewer");
-// window.bodyVisualiser = new BodyVisualizer(canvas, "male");
+// window.bodyVisualiser = new BodyVisualizer(canvas, "male", "http://localhost:5000");
